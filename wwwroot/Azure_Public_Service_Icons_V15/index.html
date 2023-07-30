@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Image Viewer</title>
+    <style>
+        /* Optional CSS styling for image display */
+        .image-container {
+            display: inline-block;
+            margin: 10px;
+        }
+        .image-name {
+            text-align: center;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Image Viewer</h1>
+
+    <div id="image-gallery">
+        <!-- Images will be loaded here -->
+    </div>
+
+    <script>
+        // Function to fetch all folders and their SVG images
+        function fetchImagesFromFolders() {
+            const folderPath = "C:/Users/insin/OneDrive/5 Kd_Learn/Azure_Public_Service_Icons_V15/Azure_Public_Service_Icons/Icons/"; // Replace with the path to the parent folder containing all folders
+
+            fetch(folderPath)
+            .then(response => response.text())
+            .then(text => {
+                const parser = new DOMParser();
+                const xmlDOM = parser.parseFromString(text, "text/xml");
+                const folders = xmlDOM.querySelectorAll("a");
+
+                for (const folder of folders) {
+                    const folderName = folder.getAttribute("href");
+                    if (!folderName.startsWith(".")) {
+                        fetchImagesFromFolder(`${folderPath}${folderName}`);
+                    }
+                }
+            })
+            .catch(error => console.error(`Error fetching folders: ${error}`));
+        }
+
+        // Function to fetch SVG images from a specific folder
+        function fetchImagesFromFolder(folderPath) {
+            fetch(folderPath)
+            .then(response => response.text())
+            .then(text => {
+                const parser = new DOMParser();
+                const xmlDOM = parser.parseFromString(text, "text/xml");
+                const files = xmlDOM.querySelectorAll("a");
+                
+                for (const file of files) {
+                    const fileName = file.getAttribute("href");
+                    if (fileName.endsWith(".svg")) {
+                        createImageElement(`${folderPath}${fileName}`, fileName);
+                    }
+                }
+            })
+            .catch(error => console.error(`Error fetching images from ${folderPath}: ${error}`));
+        }
+
+        // Function to create and append image elements to the gallery
+        function createImageElement(url, fileName) {
+            const gallery = document.getElementById("image-gallery");
+            const imageContainer = document.createElement("div");
+            imageContainer.classList.add("image-container");
+
+            const image = new Image();
+            image.src = url;
+            image.alt = fileName;
+            imageContainer.appendChild(image);
+
+            const imageName = document.createElement("div");
+            imageName.classList.add("image-name");
+            imageName.textContent = fileName;
+            imageContainer.appendChild(imageName);
+
+            gallery.appendChild(imageContainer);
+        }
+
+        // Call the function to fetch and display the images
+        fetchImagesFromFolders();
+    </script>
+</body>
+</html>
