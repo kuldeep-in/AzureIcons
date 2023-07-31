@@ -40,7 +40,7 @@ namespace AzureIcons.Web.Pages
         {
             var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Azure_Public_Service_Icons_V15/Icons");
             var folderPath = Path.Combine(wwwrootPath, folder);
-            return Directory.GetFiles(folderPath, "*.svg")
+            return Directory.GetFiles(folderPath, "*.*")
                             .Select(file => Path.GetFileName(file))
                             .ToList();
         }
